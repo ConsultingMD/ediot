@@ -21,14 +21,29 @@ RSpec.describe Grnds::Ediot::Parser do
 
     let(:parser) { Grnds::Ediot::Parser.new(definition) }
 
-    describe '#initialize' do
-      it 'identifies the record header' do
-        expect(parser.segment_header).to eq('INS')
+    describe '#is_known_line_type?' do
+      it 'is true when line type is defined' do
+        expect(parser.is_known_line_type?('INS*0*9')).to be true
+        expect(parser.is_known_line_type?('REF*1*8')).to be true
+      end
+
+      it 'is false when the line type is not defined' do
+        expect(parser.is_known_line_type?('FOO*1*8')).to be false
+      end
+    end
+
+    describe '#is_record_header?' do
+      it 'is true when the line is a header record' do
+        expect(parser.is_record_header?('INS*0*9')).to be true
+      end
+
+      it 'is false when the line is not a header record' do
+        expect(parser.is_record_header?('REF*1*8')).to be false
       end
     end
 
     describe 'record parsing' do
-      let(:records) { parser.parse(raw_records) }
+      let(:records) { parser.file_parse(raw_records) }
 
       it 'processes two records' do
         expect(records.count).to eql(2)
@@ -64,7 +79,7 @@ RSpec.describe Grnds::Ediot::Parser do
       it 'processes the records in the file' do
         column_headers = parser.rows_header
         out_file << CSV::Row.new(column_headers,column_headers, true).to_s
-        parser.stream_parse(in_file) do |row|
+        parser.parse(in_file) do |row|
           out_file << CSV::Row.new(column_headers,row).to_s
         end
         streamed_csv = CSV.parse(out_file.string, headers: true)
@@ -75,18 +90,6 @@ RSpec.describe Grnds::Ediot::Parser do
         end
       end
 
-      it 'requires a block'
-
-      it 'only splits rows between record boundries'
-      it 'can not have a buffer that is smaller than one record'
-      it 'buffer size is a multiple of the record definition'
-      context 'when the last record is not complete' do
-        it 'will process what information is available'
-      end
-    end
-
-    context 'given a non-streaming object' do
-      it 'throws an error'
     end
 
     after(:each) do |example|

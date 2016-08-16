@@ -4,7 +4,6 @@ module Grnds
 
       include SegmentParser
 
-      BUFFER_MAX = 500
       DEFINITION = {
         :INS => {size: 18},
         :REF => {occurs: 5, size: 3 },
@@ -24,61 +23,57 @@ module Grnds
       def initialize(definition=DEFINITION)
         @record = Record.new(definition)
         @segment_keys = definition.keys.map{|k| k.to_s }
-        @segment_header = @segment_keys.first
       end
 
-      # The column headers based on the record definition
       def rows_header
         @record.row_keys
       end
 
-      # Parses a record file as a string
-      # Splits the record on newline chars and
-      # iterates through the list. The function scans
-      # the rows and segments the records.
-      def parse(record_file)
-        record_rows = []
+      def parse(io_in, &block)
         record_lines = []
-        record_file.split(/\n/).each do |line|
-          line_key = segment_peek(line)
-          if @segment_keys.include?(line_key)
-            if line_key == @segment_header
-              if record_lines.count > 1
-                # parse the previous header rows
-                record_rows << @record.parse(record_lines)
-              end
-              record_lines = [line]
-            else
-              record_lines << line
-            end
-          end
-        end
-        # catch the record_lines when we hit the end of the rows
-        record_rows << @record.parse(record_lines)
-      end
-
-      # Parses a stream input. Must be an IO::Enumerable object
-      def stream_parse(io_in)
+        collecting = false
         until io_in.eof do
-          buffer = []
-          row = io_in.readline
-          while row do
-            buffer << row
-            row = io_in.readline
-            break if (io_in.eof || buffer.size > BUFFER_MAX)
+          line = io_in.readline
+          if line && is_known_line_type?(line)
+            if is_record_header?(line)
+              collecting = true
+              process_record(record_lines, &block)
+              record_lines = []
+            end
+            record_lines << line if collecting
           end
-          rows = parse(buffer.join())
-          rows.each do |row|
-            yield row
-          end
+          break if io_in.eof
+        end
+        # catch trailing record after eof hit
+        process_record(record_lines, &block)
+      end
+
+      def file_parse(file_lines)
+        record_rows = []
+        parse(StringIO.new(file_lines)) do |row|
+          record_rows << row
+        end
+        record_rows
+      end
+
+      def process_record(record_lines, &block)
+        unless record_lines.empty?
+          row = @record.parse(record_lines)
+          block.call(row)
         end
       end
 
-      # Zips the headers to the values and returns each
-      # row as a hash where the column name is the key and
-      # the extracted row value is the value.
+      def is_known_line_type?(line)
+        line_key = segment_peek(line)
+        @segment_keys.include?(line_key)
+      end
+
+      def is_record_header?(line)
+        segment_peek(line) == @segment_keys.first
+      end
+
       def parse_and_zip(record_file)
-        record_rows = parse(record_file)
+        record_rows = file_parse(record_file)
         zipped = []
         record_rows.each do |row|
           zipped << Hash[rows_header.zip(row)]
