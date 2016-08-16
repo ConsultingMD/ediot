@@ -1,0 +1,68 @@
+---
+engines:
+  brakeman:
+    enabled: false
+  bundler-audit:
+    enabled: false
+  csslint:
+    enabled: false
+  scss-lint:
+    enabled: false
+    checks:
+      Shorthand:
+        enabled: false
+    exclude_fingerprints:
+      - 66cbf4f30a4511c32ae6a725db36327f
+      - f5963d6bb993b83e0ac60a8ad2e798df
+      - 240de29ffabf10464758d45fe456c3d6
+      - c72ec6a87aa2302ed97f06105252b82d
+      - 420901d412eb4e7b2d0b4f015bbecbc8
+    exclude_paths:
+      - "**/*_split?.css"
+  coffeelint:
+    enabled: false
+    checks:
+      max_line_length:
+        enabled: false
+  eslint:
+    enabled: false
+    extensions:
+    - .es6
+    - .js
+    - .jsx
+  fixme:
+    enabled: true
+  rubocop:
+    enabled: true
+    exclude_fingerprints:
+      - 0f4a1f6ee03afcbc0debef591d8d01d9
+    checks:
+      Rubocop/Metrics/ParameterLists:
+        enabled: false
+      Rubocop/Style/StringLiterals:
+        enabled: false
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - ruby
+      - javascript
+    exclude_fingerprints:
+      - 78b5f5c9e3aaa698358713c77c995bd2
+  shellcheck:
+    enabled: true
+ratings:
+  paths:
+  - Gemfile.lock
+  - "**.css"
+  - "**.coffee"
+  - "**.es6"
+  - "**.js"
+  - "**.jsx"
+  - "**.rb"
+exclude_paths:
+- config/**/*
+- db/**/*
+- script/**/*
+- spec/**/*
+- vendor/**/*
