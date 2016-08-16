@@ -5,7 +5,7 @@ module Grnds
       include SegmentParser
 
       DEFINITION = {
-        :INS => {size: 18},
+        :INS => {size: 18 },
         :REF => {occurs: 5, size: 3 },
         :DTP => {occurs: 3, size: 4 },
         :NM1 => {occurs: 2, size: 10 },

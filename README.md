@@ -58,6 +58,73 @@ Here's an example usage to create a CSV from an 834 file:
       end
     end
 
+### 834 file definition
+
+In order to properly parse an 834 file we have a simple definition object.
+Abstracting the structure of the 834 file in this way makes it easy to change
+it also makes the library code easy to test (see spec files for examples).
+
+For context a dummy 834 record looks like this:
+
+    INS*Y*18*030*AB*A***FT**N*******0
+    REF*0F*00000000
+    REF*23*800188350
+    REF*ZZ*00000000W
+    DTP*356*D8*20020128
+    DTP*336*D8*20040126
+    NM1*IL*1*SMITH*JOHN*Q***34*000000000
+    PER*IP**HP*5785552630*EM*JOHNBOY@CRAZY8.NET*CP*5735552630
+    N3*387 EAST WEST ROAD
+    N4*LONELY CREEK*M0*68786
+    DMG*D8*19500803*M
+    HLH*N*0*0
+    HD*030**HLT*        0920200300000000000000000000000000000000  *ESP
+    DTP*348*D8*20160101
+    AMT*D2*6000
+    REF*1L*WY 00222D 0001419020 2100572 N65533    WMO
+
+
+The based on this example record the out-of-the-box definition is:
+
+
+    DEFINITION = {
+        :INS => {size: 18 },
+        :REF => {occurs: 5, size: 3 },
+        :DTP => {occurs: 3, size: 4 },
+        :NM1 => {occurs: 2, size: 10 },
+        :PER => {size: 9 },
+        :N3 => {size: 2 },
+        :N4 => {size: 4 },
+        :DMG => {size: 4 },
+        :HLH => {size: 4 },
+        :HD => {size: 6 },
+        :AMT => {size: 3 }
+      }
+
+The definition hash has a few key features.
+
+    1. Each entry in the definition hash reperesents a row type 
+    we want to parse. If the row key is not the hash, it won't end 
+    up in your output. 
+
+    2. The first entry in the definition is the header row. The parser 
+    will scan the file lines until it reaches one of these. Since the
+    format type of this 834 file is "unbounded" (see http://www.rawlinsecconsulting.com/x12tutorial/x12syn.html )
+    we don't know the current record has ended until we see the start of
+    the next record.
+
+    3. Each entry has a key, (e.g. 'INS'). This corresponds to the first key in 
+    the 834 "segment." It must be a symbol, and it must have a hash as the value.
+    That hash must contain the key `:size` and have an integer value that
+    represents the number of "elements" in the segment row (each "element" 
+    is separated by the '*' character). Optionally, you can pass in a second
+    key `:occurs` this is the MAX number of times you expect to see this 
+    segment type in one record. If during record parsing this number is
+    exceded it will throw an error. Likewise for going over the number of
+    elements designated by `:size`. LESS IS OKAY. Just not more. More elements
+    than expected will throw off the pivoting from rows to columns. It would 
+    be bad. Bad like mass-histeria, dogs and cats living together, etc...
+
 
 ## Development
 
