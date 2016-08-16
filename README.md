@@ -6,7 +6,7 @@ This gem provides the ability to transform an EDI X12 834 formated file (row bas
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'ediot'
+gem 'grnds/ediot'
 ```
 
 And then execute:
@@ -15,7 +15,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install ediot
+    $ gem install grnds-ediot
 
 ## Usage
 
@@ -103,18 +103,18 @@ The based on this example record the out-of-the-box definition is:
 
 The definition hash has a few key features.
 
-    1. Each entry in the definition hash reperesents a row type 
+1. Each entry in the definition hash reperesents a row type 
     we want to parse. If the row key is not the hash, it won't end 
     up in your output. 
 
-    2. The first entry in the definition is the header row. The parser 
+2. The first entry in the definition is the header row. The parser 
     will scan the file lines until it reaches one of these. Since the
     format type of this 834 file is "unbounded" (see http://www.rawlinsecconsulting.com/x12tutorial/x12syn.html )
     we don't know the current record has ended until we see the start of
     the next record.
 
-    3. Each entry has a key, (e.g. 'INS'). This corresponds to the first key in 
-    the 834 "segment." It must be a symbol, and it must have a hash as the value.
+3. Each entry has a key (e.g. 'INS'). This corresponds to the first key in 
+    the 834 "segment." The hash key must be a symbol, be in all caps, and it must have a hash as the value.
     That hash must contain the key `:size` and have an integer value that
     represents the number of "elements" in the segment row (each "element" 
     is separated by the '*' character). Optionally, you can pass in a second
@@ -134,7 +134,9 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Testing
 
-Uses RSpec. To run the test suite:
+Uses RSpec. If you find bugs or make changes write tests first. 
+
+To run the test suite:
 
     $ rake spec
 
