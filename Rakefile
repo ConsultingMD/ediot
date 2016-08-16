@@ -8,11 +8,12 @@ RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
 namespace :demo do
-  OUTPUT_FILE_PATH = 'tmp/834_demo.csv'
-  INPUT_FILE_PATH = 'tmp/demomart.txt'
 
-  desc 'Stream the demo input file'
-  task :stream_it do |t|
+  INPUT_FILE_PATH = 'tmp/834_input.txt'
+  OUTPUT_FILE_PATH = 'tmp/834_output.csv'
+
+  desc 'Stream the demo input file (large files encouraged)'
+  task :with_stream do |t|
 
     start_time = Time.now
     row_count = 0
@@ -23,10 +24,10 @@ namespace :demo do
       File.open(OUTPUT_FILE_PATH, 'w') do |out_file|
 
         parser = Grnds::Ediot::Parser.new
-        column_headers = parser.rows_header
+        column_headers = parser.row_keys
         out_file << CSV::Row.new(column_headers,column_headers, true).to_s
 
-        parser.stream_parse(in_file) do |row|
+        parser.parse(in_file) do |row|
           print '.' if row_count % 1000 == 0
           row_count += 1
           out_file << CSV::Row.new(column_headers, row)
@@ -37,8 +38,8 @@ namespace :demo do
     print_run_stats(row_count, start_time)
   end
 
-  desc 'Run the demo input file'
-  task :do_it do |t|
+  desc 'Run the demo using a small (< 10mb) sample file'
+  task :with_file do |t|
 
     start_time = Time.now
     row_count = 0
@@ -53,8 +54,8 @@ namespace :demo do
         # read all the lines at once
         lines = in_file.read
 
-        out_file << parser.rows_header
-        rows = parser.parse(lines)
+        out_file << parser.row_keys
+        rows = parser.file_parse(lines)
         rows.each do |row|
           print '.' if row_count % 1000 == 0
           row_count += 1

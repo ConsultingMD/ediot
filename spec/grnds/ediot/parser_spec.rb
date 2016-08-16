@@ -77,7 +77,7 @@ RSpec.describe Grnds::Ediot::Parser do
       let(:parser) { Grnds::Ediot::Parser.new }
 
       it 'processes the records in the file' do
-        column_headers = parser.rows_header
+        column_headers = parser.row_keys
         out_file << CSV::Row.new(column_headers,column_headers, true).to_s
         parser.parse(in_file) do |row|
           out_file << CSV::Row.new(column_headers,row).to_s

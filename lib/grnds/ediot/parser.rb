@@ -25,7 +25,7 @@ module Grnds
         @segment_keys = definition.keys.map{|k| k.to_s }
       end
 
-      def rows_header
+      def row_keys
         @record.row_keys
       end
 
@@ -76,7 +76,7 @@ module Grnds
         record_rows = file_parse(record_file)
         zipped = []
         record_rows.each do |row|
-          zipped << Hash[rows_header.zip(row)]
+          zipped << Hash[row_keys.zip(row)]
         end
         zipped
       end
