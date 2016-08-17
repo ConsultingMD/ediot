@@ -9,8 +9,8 @@ RSpec.describe Grnds::Ediot::Record do
   }
 
   let(:definition) {{
-    INS: { size: 3 },
-    REF: { size: 3 }
+    INS: { size: 2 },
+    REF: { size: 2 }
   }}
 
   let(:record) { Grnds::Ediot::Record.new(definition) }
@@ -31,7 +31,7 @@ RSpec.describe Grnds::Ediot::Record do
 
   describe 'generating keys' do
     context 'for segments occuring once' do
-      let(:definition) { {ins: {size: 3}} }
+      let(:definition) { {ins: {size: 2}} }
 
       it 'creates keys to one level deep' do
         expect(record.row_keys).to eq ['ins_1', 'ins_2']
@@ -39,7 +39,7 @@ RSpec.describe Grnds::Ediot::Record do
     end
 
     context 'for segments occurring twice or more' do
-      let(:definition) {{ ins: { size: 3, occurs: 2 } }}
+      let(:definition) {{ ins: { size: 2, occurs: 2 } }}
 
       it 'creates nested keys' do
         expect(record.row_keys).to eq ['ins_1_1', 'ins_1_2', 'ins_2_1', 'ins_2_2']
@@ -79,8 +79,8 @@ RSpec.describe Grnds::Ediot::Record do
       }
 
       let(:definition) {{
-        INS: { size: 3 },
-        REF: { size: 3, occurs: 2 }
+        INS: { size: 2 },
+        REF: { size: 2, occurs: 2 }
       }}
 
       context 'when the repeated elements are present' do
@@ -193,8 +193,8 @@ RSpec.describe Grnds::Ediot::Record do
 
     context 'when two records of the same type have different sizes' do
       let(:definition) {{
-        :INS => {size: 18},
-        :HD => {occurs: 2, size: 6}
+        :INS => {size: 17},
+        :HD => {occurs: 2, size: 5}
       }}
 
       let(:raw_record) {[
@@ -228,17 +228,17 @@ RSpec.describe Grnds::Ediot::Record do
       let(:raw_record) { File.open('spec/support/single_record.txt','r').readlines }
       let(:processed_record) { CSV.read('spec/support/processed_single_record.csv', headers: true).first }
       let(:definition) {{
-        :INS => {size: 18},
-        :REF => {occurs: 5, size: 3},
-        :DTP => {occurs: 3, size: 4},
-        :NM1 => {occurs: 2, size: 10},
-        :PER => {size: 9},
+        :INS => {size: 17},
+        :REF => {occurs: 5, size: 2},
+        :DTP => {occurs: 3, size: 3},
+        :NM1 => {occurs: 2, size: 9},
+        :PER => {size: 8},
         :N3 => {size: 2},
-        :N4 => {size: 4},
-        :DMG => {size: 4},
-        :HLH => {size: 4},
-        :HD => {size: 5},
-        :AMT => {size: 3}
+        :N4 => {size: 3},
+        :DMG => {size: 3},
+        :HLH => {size: 3},
+        :HD => {size: 4},
+        :AMT => {size: 2}
       }}
 
       let(:record) { Grnds::Ediot::Record.new(definition) }

@@ -7,7 +7,7 @@ RSpec.describe Grnds::Ediot::SegmentParser do
 
     context 'a well formed raw segment' do
       let(:raw_row) { 'NM1*IL*1*CALRISSIAN*LANDO*S***34*111223333' }
-      let(:elements) { segment.segment_parse(raw_row: raw_row, size: 10) }
+      let(:elements) { segment.segment_parse(raw_row: raw_row, size: 9) }
 
       it 'peeks at first element of the row' do
         key = segment.segment_peek(raw_row)
@@ -20,8 +20,8 @@ RSpec.describe Grnds::Ediot::SegmentParser do
 
       it 'maps elements to array positions' do
         vals = ['NM1','IL','1','CALRISSIAN','LANDO','S','','','34','111223333']
-        elements.each_with_index do |el, idx|
-          expect(el).to eq(vals[idx])
+        vals.each_with_index do |el, idx|
+          expect(elements[idx]).to eq(el)
         end
       end
     end
@@ -30,14 +30,14 @@ RSpec.describe Grnds::Ediot::SegmentParser do
       let(:raw_row) { 'NM1*IL*1*CALRISSIAN*LANDO*VAPOR TOWERS*APT 3A*OUTPOST A*BESPIN*34*111223333' }
 
       it 'throws a processing error' do
-        expect{ segment.segment_parse(raw_row: raw_row, size: 10) }.
+        expect{ segment.segment_parse(raw_row: raw_row, size: 8) }.
           to raise_error(Grnds::Ediot::SegmentParsingError).with_message(/Too many elements/)
       end
     end
 
     context 'segment that has too few elements' do
       let(:raw_row) { 'NM1*IL*1*CALRISSIAN*LANDO*1' }
-      let(:elements) { segment.segment_parse(raw_row: raw_row, size: 8) }
+      let(:elements) { segment.segment_parse(raw_row: raw_row, size: 7) }
 
       it 'pads out the missing values as empty strings on the end of the array' do
         expect(elements[6]).to be_empty
@@ -47,7 +47,7 @@ RSpec.describe Grnds::Ediot::SegmentParser do
 
     context 'segment with leading/trailing whitespace' do
       let(:raw_row) { '        NM1*  IL*1*CALRI SIAN*LANDO*S***34*111223333             ' }
-      let(:elements) { segment.segment_parse(raw_row: raw_row, size: 10) }
+      let(:elements) { segment.segment_parse(raw_row: raw_row, size: 9) }
 
       it 'clears the whitespace when peeking at the first element' do
         key = segment.segment_peek(raw_row)

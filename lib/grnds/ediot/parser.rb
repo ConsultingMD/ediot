@@ -5,17 +5,17 @@ module Grnds
       include SegmentParser
 
       DEFINITION = {
-        :INS => {size: 18 },
-        :REF => {occurs: 5, size: 3 },
-        :DTP => {occurs: 3, size: 4 },
-        :NM1 => {occurs: 2, size: 10 },
-        :PER => {size: 9 },
+        :INS => {size: 17 },
+        :REF => {occurs: 5, size: 2 },
+        :DTP => {occurs: 3, size: 3 },
+        :NM1 => {occurs: 2, size: 9 },
+        :PER => {size: 8 },
         :N3 => {size: 2 },
-        :N4 => {size: 4 },
-        :DMG => {size: 4 },
-        :HLH => {size: 4 },
-        :HD => {size: 6 },
-        :AMT => {size: 3 }
+        :N4 => {size: 3 },
+        :DMG => {size: 3 },
+        :HLH => {size: 3 },
+        :HD => {size: 5 },
+        :AMT => {size: 2 }
       }
 
       attr_reader :segment_header

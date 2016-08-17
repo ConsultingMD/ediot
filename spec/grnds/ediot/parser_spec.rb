@@ -15,8 +15,8 @@ RSpec.describe Grnds::Ediot::Parser do
     }
 
     let(:definition) {{
-      INS: { size: 3 },
-      REF: { size: 3 }
+      INS: { size: 2 },
+      REF: { size: 2 }
     }}
 
     let(:parser) { Grnds::Ediot::Parser.new(definition) }

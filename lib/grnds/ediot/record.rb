@@ -22,7 +22,7 @@ module Grnds
 
       def definition_to_keys(key, options)
         row_keys = []
-        size = options[:size] - 1 # -1 since we don't write the first element
+        size = options[:size]
         occurs = options[:occurs]
         prefix = "#{key.to_s.downcase}_"
         if occurs && occurs > 1
@@ -56,7 +56,7 @@ module Grnds
           raise_record_error(row_key, occurs, rows_matched) if filler_size < 0 # we got more than we asked for
 
           filler_size.times do
-            fill = (2..size).map{""} # omit the first element here too
+            fill = (1..size).map{""}
             @row_values << fill
           end
         end

@@ -6,9 +6,9 @@ module Grnds
 
       def segment_parse(raw_row:, size:)
         elements = segment_split(raw_row)
-        split_size = elements.size
+        split_size = elements.size - 1 # we don't count the row key in our size. Split size will always be bigger
         raise_segment_error(size, split_size, elements.first) if split_size > size
-        (0..(size - 1)).map{|x| elements[x] || ''} # Padd out the array with empty strings
+        (0..size).map{|x| elements[x] || ''} # Pad out the array with empty strings
       end
 
       def segment_peek(raw_row)
