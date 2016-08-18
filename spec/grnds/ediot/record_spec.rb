@@ -186,7 +186,7 @@ RSpec.describe Grnds::Ediot::Record do
 
       it 'throws an error' do
         expect{ record.parse(raw_record)}.
-          to raise_error(Grnds::Ediot::RecordParsingError).with_message(/Expected 1 of REF segments\. Got 2./)
+          to raise_error(Grnds::Ediot::Error::RecordParsingError).with_message(/Expected 1 of REF segments\. Got 2./)
       end
 
     end

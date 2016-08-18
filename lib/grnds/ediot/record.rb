@@ -73,7 +73,7 @@ module Grnds
 
       def raise_record_error(row_key, occurs, rows_matched)
         msg = "Error parsing record! Expected #{occurs} of #{row_key} segments. Got #{rows_matched}."
-        raise RecordParsingError.new(msg)
+        raise Error::RecordParsingError.new(msg)
       end
 
     end

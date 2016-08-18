@@ -21,7 +21,7 @@ module Grnds
 
       def raise_segment_error(size, split_size, element)
         msg = "Too many elements! Expecting #{size} elements for segment #{element}. Got #{split_size}."
-        raise SegmentParsingError.new(msg)
+        raise Error::SegmentParsingError.new(msg)
       end
     end
   end
