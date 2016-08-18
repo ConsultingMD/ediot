@@ -1,3 +1,5 @@
+$LOAD_PATH.push './lib'
+
 require 'csv'
 require 'grnds/ediot'
 require 'bundler/gem_tasks'
