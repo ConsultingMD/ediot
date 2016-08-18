@@ -1,26 +1,26 @@
 module Grnds
   module Ediot
     class Record
-
       include SegmentParser
 
       attr_reader :segments, :row_keys, :row_values
 
+      # @param definition [Hash]
       def initialize(definition)
         @row_keys = generate_keys(definition)
         @row_values = []
         @segments = definition
       end
 
-      def generate_keys(definition)
-        row_keys = []
-        definition.each do |key, options|
-          row_keys << definition_to_keys(key, options)
-        end
-        row_keys.flatten
+      private def generate_keys(definition)
+        Array.new.tap do |arr|
+          definition.each do |key, options|
+            arr.push definition_to_keys(key, options)
+          end
+        end.flatten
       end
 
-      def definition_to_keys(key, options)
+      private def definition_to_keys(key, options)
         row_keys = []
         size = options[:size]
         occurs = options[:occurs]
@@ -39,9 +39,10 @@ module Grnds
         row_keys
       end
 
+      # @param raw_rows [Array<String>]
       def parse(raw_rows)
         @row_values = []
-        @segments.each do |row_key, options|
+        segments.each do |row_key, options|
           occurs = options[:occurs] || 1
           size = options[:size]
 
@@ -63,19 +64,18 @@ module Grnds
         @row_values.flatten!
       end
 
-      def zip
+      private def zip
         Hash[@row_keys.zip(row_values)]
       end
 
-      def match_and_sort(raw_rows, row_key)
+      private def match_and_sort(raw_rows, row_key)
         raw_rows.select {|r| row_key.to_s == segment_peek(r)}.sort
       end
 
-      def raise_record_error(row_key, occurs, rows_matched)
+      private def raise_record_error(row_key, occurs, rows_matched)
         msg = "Error parsing record! Expected #{occurs} of #{row_key} segments. Got #{rows_matched}."
-        raise RecordParsingError.new(msg)
+        raise Error::RecordParsingError.new(msg)
       end
-
     end
   end
 end

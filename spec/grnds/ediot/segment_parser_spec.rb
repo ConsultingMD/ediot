@@ -31,7 +31,7 @@ RSpec.describe Grnds::Ediot::SegmentParser do
 
       it 'throws a processing error' do
         expect{ segment.segment_parse(raw_row: raw_row, size: 8) }.
-          to raise_error(Grnds::Ediot::SegmentParsingError).with_message(/Too many elements/)
+          to raise_error(Grnds::Ediot::Error::SegmentParsingError).with_message(/Too many elements/)
       end
     end
 
