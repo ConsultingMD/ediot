@@ -7,4 +7,5 @@ group :test, :development do
   gem 'rspec'
   gem 'pry'
   gem 'pry-byebug'
+  gem 'yard'
 end
