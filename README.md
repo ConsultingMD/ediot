@@ -103,26 +103,26 @@ The based on this example record the out-of-the-box definition is:
 
 The definition hash has a few key features.
 
-1. Each entry in the definition hash reperesents a row type 
-    we want to parse. If the row key is not the hash, it won't end 
-    up in your output. 
+1. Each entry in the definition hash reperesents a row type
+    we want to parse. If the row key is not the hash, it won't end
+    up in your output.
 
-2. The first entry in the definition is the header row. The parser 
+2. The first entry in the definition is the header row. The parser
     will scan the file lines until it reaches one of these. Since the
     format type of this 834 file is "unbounded" (see http://www.rawlinsecconsulting.com/x12tutorial/x12syn.html )
     we don't know the current record has ended until we see the start of
     the next record.
 
-3. Each entry has a key (e.g. 'INS'). This corresponds to the first key in 
+3. Each entry has a key (e.g. 'INS'). This corresponds to the first key in
     the 834 "segment." The hash key must be a symbol, be in all caps, and it must have a hash as the value.
     That hash must contain the key `:size` and have an integer value that
-    represents the number of "elements" in the segment row (each "element" 
+    represents the number of "elements" in the segment row (each "element"
     is separated by the '*' character). Optionally, you can pass in a second
-    key `:occurs` this is the MAX number of times you expect to see this 
+    key `:occurs` this is the MAX number of times you expect to see this
     segment type in one record. If during record parsing this number is
     exceded it will throw an error. Likewise for going over the number of
     elements designated by `:size`. LESS IS OKAY. Just not more. More elements
-    than expected will throw off the pivoting from rows to columns. It would 
+    than expected will throw off the pivoting from rows to columns. It would
     be bad. Bad like mass-histeria, dogs and cats living together, etc...
 
 
@@ -134,7 +134,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Testing
 
-Uses RSpec. If you find bugs or make changes write tests first. 
+Uses RSpec. If you find bugs or make changes write tests first.
 
 To run the test suite:
 
@@ -143,3 +143,4 @@ To run the test suite:
 
 ## License
 Copyright (c) 2016 Grand Rounds Inc, all rights reserved.
+![Ren Hoek](http://3b3832722e63ef13df5f-655e11a96f14b2c941c4bc34ef58f583.r35.cf2.rackcdn.com/product_images_new/Mens_Grey_Ren_And_Stimpy_Eediot_T_Shirt_from_Chunk_print_500-480-500.jpg)
