@@ -1,13 +1,13 @@
 # EDIot (Electronic Data Interchange oriented transformer)
-This gem provides the ability to transform an EDI X12 834 formated file (row based) to flattened CSV format (column based).
+This gem provides the ability to transform an EDI X12 834 formated file (row based) to flattened CSV format (column based). You can find details on this format here http://www.x12.org/about/faqs.cfm#a1
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-```ruby
-gem 'grnds/ediot'
-```
+
+    gem 'grnds-ediot', git: 'https://github.com/ConsultingMD/ediot.git', tag: '<sha-here>'
+
 
 And then execute:
 
@@ -18,9 +18,6 @@ Or install it yourself as:
     $ gem install grnds-ediot
 
 ## Usage
-Use as part of your project and include the gem in your Gemfile:
-
-    gem 'ediot', git: 'https://github.com/ConsultingMD/ediot.git', tag: '<sha-here>'
 
 ### Demo
 See rake tasks for examples of processing files in bulk or streaming
