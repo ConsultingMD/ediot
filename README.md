@@ -1,4 +1,4 @@
-# EDIot
+# EDIot (Electronic Data Interchange oriented transformer)
 This gem provides the ability to transform an EDI X12 834 formated file (row based) to flattened CSV format (column based).
 
 ## Installation
@@ -18,6 +18,9 @@ Or install it yourself as:
     $ gem install grnds-ediot
 
 ## Usage
+Use as part of your project and include the gem in your Gemfile:
+
+    gem 'ediot', git: 'https://github.com/ConsultingMD/ediot.git', tag: '<sha-here>'
 
 ### Demo
 See rake tasks for examples of processing files in bulk or streaming
@@ -31,7 +34,8 @@ Rake tasks expect a tmp directory to be present in the project directory (e.g. '
 
 ### IRL
 
-Here's an example usage to create a CSV from an 834 file:
+Here's an example usage to create a CSV from an 834 file. The parser is designed for streaming data. 
+Feed it an IOStream compatible object.
 
     require 'csv'
     require 'grnds/ediot'
@@ -123,7 +127,7 @@ The definition hash has a few key features.
     exceded it will throw an error. Likewise for going over the number of
     elements designated by `:size`. LESS IS OKAY. Just not more. More elements
     than expected will throw off the pivoting from rows to columns. It would 
-    be bad. Bad like mass-histeria, dogs and cats living together, etc...
+    be bad. Bad like mass-hysteria, dogs and cats living together, etc...
 
 
 ## Development
