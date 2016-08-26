@@ -1,5 +1,5 @@
 # EDIot (Electronic Data Interchange oriented transformer)
-This gem provides the ability to transform an EDI X12 834 formated file (row based) to flattened CSV format (column based). You can find details on this format here http://www.x12.org/about/faqs.cfm#a1
+This gem provides the ability to transform an EDI X12 ANSI 834 formated file (row based) to flattened CSV format (column based). You can find details on this format here http://www.x12.org/about/faqs.cfm#a1 and here https://getworkforce.com/ansi-834-file-layout/
 
 ## Installation
 
