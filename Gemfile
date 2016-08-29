@@ -9,4 +9,5 @@ group :test, :development do
   gem 'pry'
   gem 'pry-byebug'
   gem 'yard'
+  gem 'simplecov', :require => false
 end
