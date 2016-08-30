@@ -29,13 +29,12 @@ module Grnds
         @record.row_keys
       end
 
-      # @param io_in [IO]
+      # @param enum_in [Enumerator]
       # @return [Array<Array<String>>]
-      def parse(io_in, &block)
+      def parse(enum_in, &block)
         record_lines = []
         collecting = false
-        until io_in.eof do
-          line = io_in.readline
+        enum_in.each do |line|
           if line && is_known_line_type?(line)
             if is_record_header?(line)
               collecting = true
@@ -44,7 +43,6 @@ module Grnds
             end
             record_lines << line if collecting
           end
-          break if io_in.eof
         end
         # catch trailing record after eof hit
         process_record(record_lines, &block)
