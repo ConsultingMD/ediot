@@ -1,7 +1,6 @@
 module Grnds
   module Ediot
     class Parser
-
       include SegmentParser
 
       DEFINITION = {
@@ -46,6 +45,15 @@ module Grnds
         end
         # catch trailing record after eof hit
         process_record(record_lines, &block)
+      end
+
+      def parse_to_csv(file_enum)
+        return enum_for __method__, file_enum unless block_given?
+        # write the csv header row first
+        yield CSV::Row.new(row_keys, row_keys, true).to_s
+        parse(file_enum) do |row|
+          yield CSV::Row.new(row_keys, row).to_s
+        end
       end
 
       # @param file_lines [String]

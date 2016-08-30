@@ -70,18 +70,19 @@ describe Grnds::Ediot::Parser do
   end
 
   describe 'Stream processing IO files' do
-    context 'given input file object' do
-      let(:processed_result) { CSV.read('spec/support/processed_simple_sample.csv', headers: true) }
-      let(:input_file_path) { 'spec/support/simple_sample.txt' }
-      let(:in_file) { File.open(input_file_path, 'r') }
+    let(:parser) { Grnds::Ediot::Parser.new }
+    let(:processed_result) { CSV.read('spec/support/processed_simple_sample.csv', headers: true) }
+    let(:input_file_path) { 'spec/support/simple_sample.txt' }
+    let(:in_file) { File.open(input_file_path, 'r') }
+
+    describe '#parse' do
       let(:out_file) { StringIO.new }
-      let(:parser) { Grnds::Ediot::Parser.new }
 
       let(:streamed_csv) do
         column_headers = parser.row_keys
-        out_file << CSV::Row.new(column_headers,column_headers, true).to_s
+        out_file << CSV::Row.new(column_headers, column_headers, true).to_s
         parser.parse(in_file) do |row|
-          out_file << CSV::Row.new(column_headers,row).to_s
+          out_file << CSV::Row.new(column_headers, row).to_s
         end
         CSV.parse(out_file.string, headers: true)
       end
@@ -93,6 +94,18 @@ describe Grnds::Ediot::Parser do
             "'#{csv_row[row_key]}' from column '#{row_key}' and row #{idx} in the csv file"
           end
         end
+      end
+    end
+
+    describe '#parse_to_csv' do
+      let(:streamed_csv) { parser.parse_to_csv(in_file) }
+
+      it 'processes the records in the file' do
+        expect(processed_result.headers.join ',').to eq streamed_csv.next.chomp
+        processed_result.each do |csv_row|
+          expect(csv_row.to_s).to eq streamed_csv.next
+        end
+        expect{ streamed_csv.next }.to raise_error StopIteration
       end
     end
 
