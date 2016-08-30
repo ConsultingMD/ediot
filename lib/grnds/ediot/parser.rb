@@ -5,17 +5,17 @@ module Grnds
       include SegmentParser
 
       DEFINITION = {
-        INS: {size: 17 },
-        REF: {occurs: 5, size: 2 },
-        DTP: {occurs: 3, size: 3 },
-        NM1: {occurs: 2, size: 9 },
-        PER: {size: 8 },
-        N3: {size: 2 },
-        N4: {size: 3 },
-        DMG: {size: 3 },
-        HLH: {size: 3 },
-        HD: {size: 5 },
-        AMT: {size: 2 }
+        INS: {size: 17},
+        REF: {occurs: 5, size: 2},
+        DTP: {occurs: 3, size: 3},
+        NM1: {occurs: 2, size: 9},
+        PER: {size: 8},
+        N3: {size: 2},
+        N4: {size: 3},
+        DMG: {size: 3},
+        HLH: {size: 3},
+        HD: {size: 5},
+        AMT: {size: 2},
       }
 
       # @param definition [Hash{Symbol => Hash{Symbol => Number}}]
@@ -35,8 +35,8 @@ module Grnds
         record_lines = []
         collecting = false
         enum_in.each do |line|
-          if line && is_known_line_type?(line)
-            if is_record_header?(line)
+          if line && known_line_type?(line)
+            if record_header?(line)
               collecting = true
               process_record(record_lines, &block)
               record_lines = []
@@ -67,14 +67,14 @@ module Grnds
 
       # @param line [String]
       # @return [Bool]
-      def is_known_line_type?(line)
+      def known_line_type?(line)
         line_key = segment_peek(line)
         @segment_keys.include?(line_key)
       end
 
       # @param line [String]
       # @return [Bool]
-      def is_record_header?(line)
+      def record_header?(line)
         segment_peek(line) == @segment_keys.first
       end
 
@@ -82,11 +82,9 @@ module Grnds
       # @return [Array<Hash{String => String}>]
       def parse_and_zip(record_file)
         record_rows = file_parse(record_file)
-        zipped = []
-        record_rows.each do |row|
-          zipped << Hash[row_keys.zip(row)]
+        record_rows.map do |row|
+          Hash[row_keys.zip(row)]
         end
-        zipped
       end
     end
   end
