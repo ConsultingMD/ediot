@@ -10,4 +10,5 @@ group :test, :development do
   gem 'pry-byebug'
   gem 'yard'
   gem 'simplecov', :require => false
+  gem 'faker'
 end

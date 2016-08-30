@@ -4,6 +4,7 @@ require 'csv'
 require 'grnds/ediot'
 require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
+require_relative 'sample_data/file_faker'
 
 RSpec::Core::RakeTask.new(:spec)
 
@@ -11,8 +12,22 @@ task :default => :spec
 
 namespace :demo do
 
-  INPUT_FILE_PATH = 'tmp/834_input.txt'
-  OUTPUT_FILE_PATH = 'tmp/834_output.csv'
+  desc 'Makes four sample data files for 834 testing'
+  task :fake_files do |t|
+    4.times do |c|
+      path = "tmp/834_fake_file_#{c}.txt"
+      File.open(path,'w') do |file|
+        faker = FileFaker.new(employee_count: 1000)
+        faker.render(file)
+        puts faker.render_meta
+      end
+      puts "Wrote '#{path}'"
+    end
+    puts 'Done!'
+  end
+
+  INPUT_FILE_PATH = 'tmp/834_fake_file_1.txt'
+  OUTPUT_FILE_PATH = 'tmp/834_fake_file_1.csv'
 
   desc 'Stream the demo input file (large files encouraged)'
   task :with_stream do |t|
