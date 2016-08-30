@@ -1,7 +1,10 @@
 require 'spec_helper'
 require 'csv'
 
-describe Grnds::Ediot::Parser do
+RSpec.describe Grnds::Ediot::Parser do
+  let(:edi_file) { File.open('spec/support/simple_sample.txt', 'r') }
+  let(:parser) { Grnds::Ediot::Parser.new }
+
   context 'given a simple example' do
     let(:raw_records){
       %Q{
@@ -56,7 +59,6 @@ describe Grnds::Ediot::Parser do
   context 'given a single record in a file' do
     let(:raw_records) { File.open('spec/support/simple_sample.txt','r').read }
     let(:processed_result) { CSV.read('spec/support/processed_simple_sample.csv', headers: true) }
-    let(:parser) { Grnds::Ediot::Parser.new }
 
     it 'proceses the records correctly' do
       zipped = parser.parse_and_zip(raw_records)
@@ -69,44 +71,53 @@ describe Grnds::Ediot::Parser do
     end
   end
 
-  describe 'Stream processing IO files' do
-    let(:parser) { Grnds::Ediot::Parser.new }
+  describe '#parse' do
     let(:processed_result) { CSV.read('spec/support/processed_simple_sample.csv', headers: true) }
-    let(:input_file_path) { 'spec/support/simple_sample.txt' }
-    let(:in_file) { File.open(input_file_path, 'r') }
 
-    describe '#parse' do
-      let(:out_file) { StringIO.new }
+    let(:out_file) { StringIO.new }
 
-      let(:streamed_csv) do
-        column_headers = parser.row_keys
-        out_file << CSV::Row.new(column_headers, column_headers, true).to_s
-        parser.parse(in_file) do |row|
-          out_file << CSV::Row.new(column_headers, row).to_s
-        end
-        CSV.parse(out_file.string, headers: true)
+    let(:streamed_csv) do
+      column_headers = parser.row_keys
+      out_file << CSV::Row.new(column_headers, column_headers, true).to_s
+      parser.parse(edi_file) do |row|
+        out_file << CSV::Row.new(column_headers, row).to_s
       end
+      CSV.parse(out_file.string, headers: true)
+    end
 
-      it 'processes the records in the file' do
-        processed_result.each_with_index do |csv_row, idx|
-          streamed_csv[idx].each do |row_key, row_val|
-            expect(csv_row[row_key]).to eql(row_val), "Expected parsed value '#{row_val}' to equal "\
-            "'#{csv_row[row_key]}' from column '#{row_key}' and row #{idx} in the csv file"
-          end
+    it 'processes the records in the file' do
+      processed_result.each_with_index do |csv_row, idx|
+        streamed_csv[idx].each do |row_key, row_val|
+          expect(csv_row[row_key]).to eql(row_val), "Expected parsed value '#{row_val}' to equal "\
+          "'#{csv_row[row_key]}' from column '#{row_key}' and row #{idx} in the csv file"
         end
       end
     end
+  end
 
-    describe '#parse_to_csv' do
-      let(:streamed_csv) { parser.parse_to_csv(in_file) }
-
-      it 'processes the records in the file' do
-        expect(processed_result.headers.join ',').to eq streamed_csv.next.chomp
-        processed_result.each do |csv_row|
-          expect(csv_row.to_s).to eq streamed_csv.next
-        end
-        expect{ streamed_csv.next }.to raise_error StopIteration
+  describe '#parse_to_csv' do
+    shared_examples 'can be streaming or not' do
+      it 'returns an enumerator' do
+        expect(parser.parse_to_csv input).to be_an Enumerator
       end
+
+      it 'outputs lines of a CSV when given a block' do
+        correct_csv_enum = File.open('spec/support/processed_simple_sample.csv', 'r').to_enum
+        parser.parse_to_csv input do |line|
+          expect(line).to eq correct_csv_enum.next
+        end
+        expect{ correct_csv_enum.next }.to raise_error StopIteration
+      end
+    end
+
+    context 'a file input' do
+      let(:input) { edi_file }
+      include_examples 'can be streaming or not'
+    end
+
+    context 'an enumerator input' do
+      let(:input) { edi_file.to_enum }
+      include_examples 'can be streaming or not'
     end
 
     after(:each) do |example|
