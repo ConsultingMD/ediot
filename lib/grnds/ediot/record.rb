@@ -13,11 +13,7 @@ module Grnds
       end
 
       private def generate_keys(definition)
-        Array.new.tap do |arr|
-          definition.each do |key, options|
-            arr.push definition_to_keys(key, options)
-          end
-        end.flatten
+        definition.map { |key, options| definition_to_keys(key, options) }.flatten
       end
 
       private def definition_to_keys(key, options)

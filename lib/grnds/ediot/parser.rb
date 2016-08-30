@@ -1,21 +1,20 @@
 module Grnds
   module Ediot
     class Parser
-
       include SegmentParser
 
       DEFINITION = {
-        INS: {size: 17 },
-        REF: {occurs: 5, size: 2 },
-        DTP: {occurs: 3, size: 3 },
-        NM1: {occurs: 2, size: 9 },
-        PER: {size: 8 },
-        N3: {size: 2 },
-        N4: {size: 3 },
-        DMG: {size: 3 },
-        HLH: {size: 3 },
-        HD: {size: 5 },
-        AMT: {size: 2 }
+        INS: {size: 17},
+        REF: {occurs: 5, size: 2},
+        DTP: {occurs: 3, size: 3},
+        NM1: {occurs: 2, size: 9},
+        PER: {size: 8},
+        N3: {size: 2},
+        N4: {size: 3},
+        DMG: {size: 3},
+        HLH: {size: 3},
+        HD: {size: 5},
+        AMT: {size: 2},
       }
 
       # @param definition [Hash{Symbol => Hash{Symbol => Number}}]
@@ -29,25 +28,32 @@ module Grnds
         @record.row_keys
       end
 
-      # @param io_in [IO]
+      # @param enum_in [Enumerator]
       # @return [Array<Array<String>>]
-      def parse(io_in, &block)
+      def parse(enum_in, &block)
         record_lines = []
         collecting = false
-        until io_in.eof do
-          line = io_in.readline
-          if line && is_known_line_type?(line)
-            if is_record_header?(line)
+        enum_in.each do |line|
+          if line && known_line_type?(line)
+            if record_header?(line)
               collecting = true
               process_record(record_lines, &block)
               record_lines = []
             end
             record_lines << line if collecting
           end
-          break if io_in.eof
         end
         # catch trailing record after eof hit
         process_record(record_lines, &block)
+      end
+
+      def parse_to_csv(file_enum)
+        return enum_for __method__, file_enum unless block_given?
+        # write the csv header row first
+        yield CSV::Row.new(row_keys, row_keys, true).to_s
+        parse(file_enum) do |row|
+          yield CSV::Row.new(row_keys, row).to_s
+        end
       end
 
       # @param file_lines [String]
@@ -69,14 +75,14 @@ module Grnds
 
       # @param line [String]
       # @return [Bool]
-      def is_known_line_type?(line)
+      def known_line_type?(line)
         line_key = segment_peek(line)
         @segment_keys.include?(line_key)
       end
 
       # @param line [String]
       # @return [Bool]
-      def is_record_header?(line)
+      def record_header?(line)
         segment_peek(line) == @segment_keys.first
       end
 
@@ -84,11 +90,9 @@ module Grnds
       # @return [Array<Hash{String => String}>]
       def parse_and_zip(record_file)
         record_rows = file_parse(record_file)
-        zipped = []
-        record_rows.each do |row|
-          zipped << Hash[row_keys.zip(row)]
+        record_rows.map do |row|
+          Hash[row_keys.zip(row)]
         end
-        zipped
       end
     end
   end
