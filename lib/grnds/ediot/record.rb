@@ -60,10 +60,6 @@ module Grnds
         @row_values.flatten!
       end
 
-      private def zip
-        Hash[@row_keys.zip(row_values)]
-      end
-
       private def match_and_sort(raw_rows, row_key)
         raw_rows.select {|r| row_key.to_s == segment_peek(r)}.sort
       end

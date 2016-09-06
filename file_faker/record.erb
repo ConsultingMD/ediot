@@ -1,0 +1,16 @@
+INS*<%= primary %>*<%= relationship_code %>*030*AB*A***<%= ft_status %>**N*******0
+REF*0F*<%= subscriber_number %>
+REF*23*<%= benefit_number %>
+REF*ZZ*00000000W
+DTP*356*D8*20020126
+DTP*336*D8*20020126
+NM1*IL*1*<%= last_name %>*<%= first_name %>*<%= middle_i %>***34*<%= ssn %>
+PER*IP**HP*<%= home_phone %>*EM*<%= email %>*CP*<%= cell_phone %>
+N3*<%= street_address %>*<%= apt_number %>
+N4*<%= city %>*<%= state %>*<%= zipcode %>
+DMG*D8*<%= birthdate %>*<%= gender %>
+HLH*N*0*0
+HD*030**HLT*        0126200300000000000000000000000000000000  *<%= coverage_type %>
+DTP*348*D8*20160101
+AMT*D2*6000
+REF*1L*WY 00284D 0001410020 21<%= plan_number%> N65536    WMO
