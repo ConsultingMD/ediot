@@ -1,33 +1,37 @@
 $LOAD_PATH.push './lib'
 
+require 'fileutils'
 require 'csv'
 require 'grnds/ediot'
 require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
-require_relative 'sample_data/file_faker'
+require_relative 'file_faker/faux_834'
 
 RSpec::Core::RakeTask.new(:spec)
 
 task :default => :spec
 
+namespace :sample_data do
+
+  desc 'Makes a sample data file for 834 testing'
+  task :generate do |t|
+    dirname = 'tmp'
+    filename = "834_fake_file_#{Time.now.to_i}.txt"
+    FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
+    path = File.join(dirname, filename)
+    File.open(path,'w') do |file|
+      faker = FileFaker::Faux834.new(employee_count: 1000)
+      faker.render(file)
+      puts faker.render_meta
+    end
+    puts "Wrote '#{path}'"
+  end
+end
+
 namespace :demo do
 
-  desc 'Makes four sample data files for 834 testing'
-  task :fake_files do |t|
-    4.times do |c|
-      path = "tmp/834_fake_file_#{c}.txt"
-      File.open(path,'w') do |file|
-        faker = FileFaker.new(employee_count: 1000)
-        faker.render(file)
-        puts faker.render_meta
-      end
-      puts "Wrote '#{path}'"
-    end
-    puts 'Done!'
-  end
-
-  INPUT_FILE_PATH = 'tmp/834_fake_file_1.txt'
-  OUTPUT_FILE_PATH = 'tmp/834_fake_file_1.csv'
+  INPUT_FILE_PATH = 'tmp/834_fake_file.txt'
+  OUTPUT_FILE_PATH = 'tmp/834_fake_file.csv'
 
   desc 'Stream the demo input file (large files encouraged)'
   task :with_stream do |t|
@@ -65,9 +69,7 @@ namespace :demo do
 
     File.open(INPUT_FILE_PATH,'r') do |in_file|
       CSV.open(OUTPUT_FILE_PATH, 'w') do |out_file|
-
         parser = Grnds::Ediot::Parser.new
-
         # read all the lines at once
         lines = in_file.read
 
@@ -96,6 +98,4 @@ namespace :demo do
     seconds = Time.now - start_time
     puts "Processed file with %d rows in %5.2f seconds" % [row_count, seconds]
   end
-
 end
-
