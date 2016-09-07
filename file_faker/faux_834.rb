@@ -6,15 +6,21 @@ require 'ostruct'
 module FileFaker
   class Faux834
 
+    # POPULATION is randomly sampled to seed varables for
+    # the sponsors set of dependents. Each entry in the array
+    # has the format [<spouse/partner count>,<child count>].
+    # E.g. array [1,2] for a sponsor will generate one spouse/partner
+    # and two children.  Duplicating the one type of array object
+    # increases its probability.
     POPULATION = [
-      [0,0], [0,0],        # zero spouse, zero children
-      [1,0], [1,0],        # one spouse/life partner, zero children
-      [1,1], [1,1], [1,1], # one spouse/life partner, 1 child
-      [0,1], [0,1],        # zero spouse, 1 child
-      [1,2], [1,2], [1,2], # one spouse/life partner, 2 children
-      [0,2],               # zero partner, 2 children
-      [1,3], [1,3],        # one spouse/life partner, 3 children
-    ]
+      [0,0], [0,0],
+      [1,0], [1,0],
+      [1,1], [1,1], [1,1],
+      [0,1], [0,1],
+      [1,2], [1,2], [1,2],
+      [0,2],
+      [1,3], [1,3],
+    ].freeze
 
     def initialize(employee_count:)
       @employee_count= employee_count
