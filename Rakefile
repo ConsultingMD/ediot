@@ -55,7 +55,7 @@ namespace :walmart do
   desc 'Does everything... run this one.'
   task :run => [:clean, :generate, :encrypt, :rename, :upload_to_s3] do
     puts 'All done'
-    puts 'Execute the rogers job with `http://localhost:10014/api/v1/jobs/data_source_job`'
+    puts 'Execute the rogers job with `curl -v http://localhost:10014/api/v1/jobs/data_source_job`'
   end
 end
 
