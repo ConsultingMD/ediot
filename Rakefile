@@ -68,7 +68,7 @@ namespace :sample_data do
     FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
     path = File.join(dirname, filename)
     File.open(path,'w') do |file|
-      faker = FileFaker::Faux834.new(employee_count: ENV['EMP_COUNT'].to_i || 1000)
+      faker = FileFaker::Faux834.new(employee_count: (ENV['EMP_COUNT'] || '1000').to_i)
       faker.render(file)
       puts faker.render_meta
     end
