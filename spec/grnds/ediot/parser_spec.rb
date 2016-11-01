@@ -2,19 +2,24 @@ require 'spec_helper'
 require 'csv'
 
 RSpec.describe Grnds::Ediot::Parser do
-  let(:edi_file) { File.open('spec/support/simple_sample.txt', 'r') }
+
   let(:parser) { Grnds::Ediot::Parser.new }
+  let(:edi_stream) { Grnds::Ediot::Parser.lazy_file_stream('spec/support/simple_tilde_sample.txt','~') }
+  let(:out_file) { StringIO.new }
 
   context 'given a simple example' do
     let(:raw_records){
-      %Q{
+      # Files use ~ instead of standard line breaks
+      raw =<<~RAWREC
         ISA*00**00
         QTY*TO*3
         INS*Y*18
         REF*23*BOB SMITH
         INS*Y*19
         REF*23*SALLY SUE
-      }
+      RAWREC
+      raw.gsub(/\n/,'~')
+      StringIO.new(raw)
     }
 
     let(:definition) do
@@ -48,7 +53,11 @@ RSpec.describe Grnds::Ediot::Parser do
     end
 
     describe 'record parsing' do
-      let(:records) { parser.file_parse(raw_records) }
+      let(:records) do
+        records = []
+        parser.parse(raw_records) { |row| records << row }
+        records
+      end
 
       it 'processes two records' do
         expect(records.count).to eql(2)
@@ -57,7 +66,7 @@ RSpec.describe Grnds::Ediot::Parser do
   end
 
   context 'given a single record in a file' do
-    let(:raw_records) { File.open('spec/support/simple_sample.txt','r').read }
+    let(:raw_records) { File.foreach('spec/support/simple_sample.txt') }
     let(:processed_result) { CSV.read('spec/support/processed_simple_sample.csv', headers: true) }
 
     it 'proceses the records correctly' do
@@ -74,12 +83,10 @@ RSpec.describe Grnds::Ediot::Parser do
   describe '#parse' do
     let(:processed_result) { CSV.read('spec/support/processed_simple_sample.csv', headers: true) }
 
-    let(:out_file) { StringIO.new }
-
     let(:streamed_csv) do
       column_headers = parser.row_keys
       out_file << CSV::Row.new(column_headers, column_headers, true).to_s
-      parser.parse(edi_file) do |row|
+      parser.parse(edi_stream) do |row|
         out_file << CSV::Row.new(column_headers, row).to_s
       end
       CSV.parse(out_file.string, headers: true)
@@ -103,31 +110,33 @@ RSpec.describe Grnds::Ediot::Parser do
 
       it 'outputs lines of a CSV when given a block' do
         correct_csv_enum = File.open('spec/support/processed_simple_sample.csv', 'r').to_enum
-        parser.parse_to_csv input do |line|
+        parser.parse_to_csv(input) do |line|
           expect(line).to eq correct_csv_enum.next
         end
         expect{ correct_csv_enum.next }.to raise_error StopIteration
       end
     end
 
-    context 'a file input' do
-      let(:input) { edi_file }
-      include_examples 'can be streaming or not'
-    end
+    # context 'a file input' do
+    #   let(:input) { edi_file }
+    #   include_examples 'can be streaming or not'
+    # end
 
     context 'an enumerator input' do
-      let(:input) { edi_file.to_enum }
+      let(:input) { edi_stream }
       include_examples 'can be streaming or not'
     end
 
-    after(:each) do |example|
-      if example.exception && out_file
-        line = example.metadata[:line_number]
-        file_name = File.basename(example.metadata[:file_path], ".rb")
-        fail_file = "tmp/#{file_name}_failure_#{line}.txt"
-        File.open(fail_file,'w') { |f| f << out_file.string }
-        puts "Failure! Wrote output to file '#{fail_file}'"
-      end
+  end
+
+  after(:each) do |example|
+    if example.exception && out_file
+      line = example.metadata[:line_number]
+      file_name = File.basename(example.metadata[:file_path], ".rb")
+      fail_file = "tmp/#{file_name}_failure_#{line}.txt"
+      File.open(fail_file,'w') { |f| f << out_file.string }
+      puts "Failure! Wrote output to file '#{fail_file}'"
     end
   end
+
 end

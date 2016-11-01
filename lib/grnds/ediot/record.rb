@@ -5,7 +5,7 @@ module Grnds
 
       attr_reader :segments, :row_keys, :row_values
 
-      # @param definition [Hash]
+      # @param definition [Hash{Symbol => Hash{Symbol => Number}}]
       def initialize(definition)
         @row_keys = generate_keys(definition)
         @row_values = []
@@ -35,6 +35,11 @@ module Grnds
         row_keys
       end
 
+      # Builds a structured record row based on the segment definition. Takes the
+      # raw rows from the parsed records and for each type of segment looks into the
+      # raw rows to see if the segments exist. If they do exist in the raw rows the
+      # segment is created from the the row. The values in the segment are returned
+      #
       # @param raw_rows [Array<String>]
       def parse(raw_rows)
         @row_values = []
@@ -45,7 +50,8 @@ module Grnds
           matched_rows = match_and_sort(raw_rows, row_key)
           matched_rows.each do |row|
             elements = segment_parse(raw_row: row, size: size)
-            @row_values << elements.drop(1) # omit the first element value
+            # omit the first element value since that is the segment identifier
+            @row_values << elements.drop(1)
           end
 
           rows_matched = matched_rows.size
