@@ -67,14 +67,14 @@ RSpec.describe Grnds::Ediot::Parser do
 
   context 'given a single record in a file' do
     let(:raw_records) { File.foreach('spec/support/simple_sample.txt') }
-    let(:processed_result) { CSV.read('spec/support/processed_simple_sample.csv', headers: true) }
+    let(:expected_results) { CSV.read('spec/support/processed_simple_sample.csv', headers: true) }
 
     it 'proceses the records correctly' do
-      zipped = parser.parse_and_zip(raw_records)
-      processed_result.each_with_index do |csv_row, idx|
-        zipped[idx].each do |row_key, row_val|
-          expect(csv_row[row_key]).to eql(row_val), "Expected parsed value '#{row_val}' to equal "\
-          "'#{csv_row[row_key]}' from column '#{row_key}' and row #{idx} in the csv file"
+      processed_rows = parser.parse_to_hashes(raw_records)
+      expected_results.each_with_index do |expected_row, idx|
+        processed_rows[idx].each do |row_key, row_val|
+          expect(expected_row[row_key]).to eql(row_val), "Expected parsed value '#{row_val}' to equal "\
+          "'#{expected_row[row_key]}' from column '#{row_key}' and row #{idx} in the csv file"
         end
       end
     end
@@ -103,7 +103,10 @@ RSpec.describe Grnds::Ediot::Parser do
   end
 
   describe '#parse_to_csv' do
-    shared_examples 'can be streaming or not' do
+
+    context 'an enumerator input' do
+      let(:input) { edi_stream }
+
       it 'returns an enumerator' do
         expect(parser.parse_to_csv input).to be_an Enumerator
       end
@@ -116,17 +119,6 @@ RSpec.describe Grnds::Ediot::Parser do
         expect{ correct_csv_enum.next }.to raise_error StopIteration
       end
     end
-
-    # context 'a file input' do
-    #   let(:input) { edi_file }
-    #   include_examples 'can be streaming or not'
-    # end
-
-    context 'an enumerator input' do
-      let(:input) { edi_stream }
-      include_examples 'can be streaming or not'
-    end
-
   end
 
   after(:each) do |example|

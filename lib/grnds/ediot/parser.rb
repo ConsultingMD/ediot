@@ -99,18 +99,24 @@ module Grnds
       # Rows are returned as strings that can be written directly to a file or IO
       #
       # @param file_enum [Enumerator]
+      # @param header [Boolean] True if you want a header row, false if not.
       # @yield csv_row [String]
-      def parse_to_csv(file_enum)
+      def parse_to_csv(file_enum, header=true)
         return enum_for __method__, file_enum unless block_given?
         # write the csv header row first
-        yield CSV::Row.new(row_keys, row_keys, true).to_s
+        yield CSV::Row.new(row_keys, row_keys, true).to_s if header
         parse(file_enum) do |row|
           yield CSV::Row.new(row_keys, row).to_s
         end
       end
 
-      # Used for testing
-      def parse_and_zip(enum_in)
+      # Used for testing. Breaks streaming
+      # Returns all records as an array of hashes keyed off
+      # the segment row key values
+      #
+      # @param enum_in [Enumerator]
+      # @returns [Array<Hash>]
+      def parse_to_hashes(enum_in)
         [].tap do |records|
           parse(enum_in) do |row|
             records << Hash[row_keys.zip(row)]
