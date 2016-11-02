@@ -104,8 +104,7 @@ module Grnds
         return enum_for __method__, file_enum unless block_given?
         # write the csv header row first
         yield CSV::Row.new(row_keys, row_keys, true).to_s
-        p
-        arse(file_enum) do |row|
+        parse(file_enum) do |row|
           yield CSV::Row.new(row_keys, row).to_s
         end
       end
