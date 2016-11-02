@@ -26,7 +26,7 @@ module Grnds
       # @param sep [String] The file line/segment separator
       # @return [Enumerator]
       def self.lazy_file_stream(file_path, sep=SEGMENT_SEP)
-        lazy_line_filter(File.foreach(file_path, sep))
+        lazy_line_filter(File.foreach(file_path, sep), sep)
       end
 
       # Mutates the segments (in a lazy way) to remove the trailing line
@@ -34,8 +34,8 @@ module Grnds
       #
       # @param enum [Enumerator]
       # @return [Enumerator::Lazy]
-      def self.lazy_line_filter(enum)
-        enum.lazy.map { |seg| seg[0..(-SEGMENT_SEP.size - 1)] }
+      def self.lazy_line_filter(enum, sep=SEGMENT_SEP)
+        enum.lazy.map { |seg| seg[0..(-sep.size - 1)] }
       end
 
       # Initialize with the definition of the 384 eligibility file
