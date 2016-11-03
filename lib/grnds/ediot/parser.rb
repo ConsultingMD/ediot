@@ -3,6 +3,7 @@ module Grnds
     class Parser
       include SegmentParser
 
+      # Can only be one a one character segment separator
       SEGMENT_SEP = '~'
 
       DEFINITION = {
@@ -17,7 +18,7 @@ module Grnds
         HLH: {size: 3},
         HD: {size: 5},
         AMT: {size: 2},
-      }
+      }.freeze
 
       # Open a file using the segment separator to split file and return an enum.
       # Useful for testing or exploratory work or small files
@@ -26,16 +27,26 @@ module Grnds
       # @param sep [String] The file line/segment separator
       # @return [Enumerator]
       def self.lazy_file_stream(file_path, sep=SEGMENT_SEP)
-        lazy_line_filter(File.foreach(file_path, sep), sep)
+        strings_to_lines(File.open(file_path, 'r'))
       end
 
-      # Mutates the segments (in a lazy way) to remove the trailing line
-      # separator character.
+      # String based stream filter to split strings into enumerated lines based
+      # on the desginated segment separator
       #
-      # @param enum [Enumerator]
+      # @param enum_of_strings [Enumerator] An enum of string objects
+      # @param sep [String] the line separator
       # @return [Enumerator::Lazy]
-      def self.lazy_line_filter(enum, sep=SEGMENT_SEP)
-        enum.lazy.map { |seg| seg[0..(-sep.size - 1)] }
+      def self.strings_to_lines(enum_of_strings, sep=SEGMENT_SEP)
+        return enum_for __method__, enum_of_strings, sep unless block_given?
+        line = ''
+        enum_of_strings.map(&:each_char).lazy.flat_map(&:lazy).each do |char|
+          if char == sep
+            yield line
+            line = ''
+          else
+            line << char
+          end
+        end
       end
 
       # Initialize with the definition of the 384 eligibility file

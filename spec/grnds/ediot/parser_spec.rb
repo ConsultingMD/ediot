@@ -7,6 +7,24 @@ RSpec.describe Grnds::Ediot::Parser do
   let(:edi_stream) { Grnds::Ediot::Parser.lazy_file_stream('spec/support/simple_tilde_sample.txt','~') }
   let(:out_file) { StringIO.new }
 
+  describe "class methods" do
+    let(:klass) { Grnds::Ediot::Parser }
+    let(:lines) do
+      ['line ', '1-line 2-','line', ' 3-'].to_enum
+    end
+
+    subject do
+      klass.strings_to_lines(lines, '-')
+    end
+
+    it 'clips segment separator from the tail end of the line' do
+      expect(subject.next).to eq('line 1')
+      expect(subject.next).to eq('line 2')
+      expect(subject.next).to eq('line 3')
+    end
+
+  end
+
   context 'given a simple example' do
     let(:raw_records){
       # Files use ~ instead of standard line breaks
