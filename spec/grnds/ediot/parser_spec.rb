@@ -4,7 +4,7 @@ require 'csv'
 RSpec.describe Grnds::Ediot::Parser do
 
   let(:parser) { Grnds::Ediot::Parser.new }
-  let(:edi_stream) { Grnds::Ediot::Parser.lazy_file_stream('spec/support/simple_tilde_sample.txt','~') }
+  let(:edi_stream) { Grnds::Ediot::Parser.lazy_file_stream('spec/support/simple_tilde_sample.txt') }
   let(:out_file) { StringIO.new }
 
   describe "class methods" do
@@ -99,25 +99,36 @@ RSpec.describe Grnds::Ediot::Parser do
   end
 
   describe '#parse' do
-    let(:processed_result) { CSV.read('spec/support/processed_simple_sample.csv', headers: true) }
 
-    let(:streamed_csv) do
-      column_headers = parser.row_keys
-      out_file << CSV::Row.new(column_headers, column_headers, true).to_s
-      parser.parse(edi_stream) do |row|
-        out_file << CSV::Row.new(column_headers, row).to_s
+    context 'when passed a block' do
+      let(:processed_result) { CSV.read('spec/support/processed_simple_sample.csv', headers: true) }
+
+      let(:streamed_csv) do
+        column_headers = parser.row_keys
+        out_file << CSV::Row.new(column_headers, column_headers, true).to_s
+        parser.parse(edi_stream) do |row|
+          out_file << CSV::Row.new(column_headers, row).to_s
+        end
+        CSV.parse(out_file.string, headers: true)
       end
-      CSV.parse(out_file.string, headers: true)
-    end
 
-    it 'processes the records in the file' do
-      processed_result.each_with_index do |csv_row, idx|
-        streamed_csv[idx].each do |row_key, row_val|
-          expect(csv_row[row_key]).to eql(row_val), "Expected parsed value '#{row_val}' to equal "\
-          "'#{csv_row[row_key]}' from column '#{row_key}' and row #{idx} in the csv file"
+      it 'processes the records in the file' do
+        processed_result.each_with_index do |csv_row, idx|
+          streamed_csv[idx].each do |row_key, row_val|
+            expect(csv_row[row_key]).to eql(row_val), "Expected parsed value '#{row_val}' to equal "\
+            "'#{csv_row[row_key]}' from column '#{row_key}' and row #{idx} in the csv file"
+          end
         end
       end
     end
+
+    context 'without a block' do
+
+      it 'throws an ArgumentError' do
+        expect { parser.parse(edi_stream) }.to raise_error(ArgumentError)
+      end
+    end
+
   end
 
   describe '#parse_to_csv' do

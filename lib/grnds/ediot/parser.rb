@@ -26,7 +26,7 @@ module Grnds
       # @param file_path [String] The file path to parse
       # @param sep [String] The file line/segment separator
       # @return [Enumerator]
-      def self.lazy_file_stream(file_path, sep=SEGMENT_SEP)
+      def self.lazy_file_stream(file_path)
         strings_to_lines(File.open(file_path, 'r'))
       end
 
@@ -39,7 +39,10 @@ module Grnds
       def self.strings_to_lines(enum_of_strings, sep=SEGMENT_SEP)
         return enum_for __method__, enum_of_strings, sep unless block_given?
         line = ''
-        enum_of_strings.map(&:each_char).lazy.flat_map(&:lazy).each do |char|
+        enum_of_strings.map(&:each_char).lazy.flat_map do |o|
+          puts 'Making it lazy'
+          o.lazy
+        end.each do |char|
           if char == sep
             yield line
             line = ''
@@ -87,9 +90,9 @@ module Grnds
       # entry (i.e these record rows are pivoted out into one row in the final CSV document)
       #
       # @param enum_in [Enumerator]
-      # @return [Array<String>]
+      # @yield [Recor
       def parse(enum_in, &block)
-        raise RuntimeError.new("Block required") unless block
+        raise ArgumentError.new("Block required") unless block_given?
         record_lines = []
         collecting = false
         enum_in.each do |line|
@@ -139,11 +142,10 @@ module Grnds
       #
       # @param record_lines [Array]
       # @param block
-      private def process_lines(record_lines, &block)
-        raise RuntimeError.new("Block required") unless block
+      def process_lines(record_lines, &block)
         unless record_lines.empty?
           row = @record.parse(record_lines)
-          block.call(row)
+          block.call(row) if block_given?
         end
       end
     end

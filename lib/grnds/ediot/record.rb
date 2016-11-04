@@ -12,29 +12,6 @@ module Grnds
         @segments = definition
       end
 
-      private def generate_keys(definition)
-        definition.map { |key, options| definition_to_keys(key, options) }.flatten
-      end
-
-      private def definition_to_keys(key, options)
-        row_keys = []
-        size = options[:size]
-        occurs = options[:occurs]
-        prefix = "#{key.to_s.downcase}_"
-        if occurs && occurs > 1
-          occurs.times do |o|
-            size.times do |s|
-              row_keys << prefix + "#{o + 1}_#{s + 1}"
-            end
-          end
-        else
-          size.times do |s|
-            row_keys << prefix + "#{s + 1}"
-          end
-        end
-        row_keys
-      end
-
       # Builds a structured record row based on the segment definition. Takes the
       # raw rows from the parsed records and for each type of segment looks into the
       # raw rows to see if the segments exist. If they do exist in the raw rows the
@@ -66,13 +43,61 @@ module Grnds
         @row_values.flatten!
       end
 
+
+      # Ensures consistent orderding of the elements in the record
+      #
+      # @param raw_rows [Array]
+      # @param row_key [Symbol]
       private def match_and_sort(raw_rows, row_key)
         raw_rows.select {|r| row_key.to_s == segment_peek(r)}.sort
       end
 
+      # A helper function to raise if the definition does not match the data.
+      # E.g. If the definition says there are 3 REF segments and we process
+      # a file with 5 REF segments.
+      #
+      # @param row_key [Symbol]
+      # @param occurs [Number]
+      # @param rows_matched [Number]
+      # @raise [Error::RecordParsingError] if the occurance does not match the record
       private def raise_record_error(row_key, occurs, rows_matched)
         msg = "Error parsing record! Expected #{occurs} of #{row_key} segments. Got #{rows_matched}."
         raise Error::RecordParsingError.new(msg)
+      end
+
+      # Iterates over the definiton of the 834 file and generates the array of
+      # column headers for each segment size and type. Expects definition is an 
+      # ordered Hash.
+      #
+      # @params [Hash] definition
+      private def generate_keys(definition)
+        definition.map { |key, options| definition_to_keys(key, options) }.flatten
+      end
+
+      # Creates the header row column names that based on the 834 definition.
+      # It take their segment size and occurence count to generate the
+      # columns names.
+      #
+      # @param key [Symbol]
+      # @param options [Hash]
+      # @return [Array<Strting>]
+      private def definition_to_keys(key, options)
+        row_keys = []
+        size = options[:size] || 2
+        occurs = options[:occurs] || 1
+        prefix = "#{key.to_s.downcase}_"
+        if occurs && occurs > 1
+          occurs.times do |o|
+            size.times do |s|
+              row_keys << prefix + "#{o + 1}_#{s + 1}"
+            end
+          end
+        else
+          size.times do |s|
+            row_keys << prefix + "#{s + 1}"
+          end
+        end
+        row_keys
       end
     end
   end
