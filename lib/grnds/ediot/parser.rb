@@ -39,10 +39,7 @@ module Grnds
       def self.strings_to_lines(enum_of_strings, sep=SEGMENT_SEP)
         return enum_for __method__, enum_of_strings, sep unless block_given?
         line = ''
-        enum_of_strings.map(&:each_char).lazy.flat_map do |o|
-          puts 'Making it lazy'
-          o.lazy
-        end.each do |char|
+        enum_of_strings.map(&:each_char).lazy.flat_map(&:lazy).each do |char|
           if char == sep
             yield line
             line = ''
