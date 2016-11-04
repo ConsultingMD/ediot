@@ -24,7 +24,6 @@ module Grnds
       # Useful for testing or exploratory work or small files
       #
       # @param file_path [String] The file path to parse
-      # @param sep [String] The file line/segment separator
       # @return [Enumerator]
       def self.lazy_file_stream(file_path)
         strings_to_lines(File.open(file_path, 'r'))
@@ -87,7 +86,7 @@ module Grnds
       # entry (i.e these record rows are pivoted out into one row in the final CSV document)
       #
       # @param enum_in [Enumerator]
-      # @yield [Recor
+      # @yield [Record] yields a record object
       def parse(enum_in, &block)
         raise ArgumentError.new("Block required") unless block_given?
         record_lines = []

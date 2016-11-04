@@ -69,7 +69,7 @@ module Grnds
       # column headers for each segment size and type. Expects definition is an 
       # ordered Hash.
       #
-      # @params [Hash] definition
+      # @param [Hash] definition
       private def generate_keys(definition)
         definition.map { |key, options| definition_to_keys(key, options) }.flatten
       end
