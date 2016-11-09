@@ -37,25 +37,24 @@ Feed it an IOStream compatible object.
     require 'csv'
     require 'grnds/ediot'
 
-    File.open('tmp/my_834_file.txt', 'r') do |in_file|
-      File.open('tmp/my_csv_file.csv', 'w') do |out_file|
+    file_enum = Grnds::Ediot::Parser.lazy_file_stream('tmp/my_834_file.txt')
+    File.open('tmp/my_csv_file.csv', 'w') do |out_file|
 
-        # create a parser with the default 834 definition
-        parser = Grnds::Ediot::Parser.new
+      # create a parser with the default 834 definition
+      parser = Grnds::Ediot::Parser.new
 
-        # record definition contains keys for each record row
-        column_keys = parser.row_keys
+      # record definition contains keys for each record row
+      column_keys = parser.row_keys
 
-        # write the csv header row first
-        out_file << CSV::Row.new(column_keys, column_keys, true)
+      # write the csv header row first
+      out_file << CSV::Row.new(column_keys, column_keys, true)
 
-        # parser takes a fileIO object and will read the file
-        # lines until EOF. As the reading cursor advances for
-        # each complete record it finds it will yield an array
-        # representing the row object.
-        parser.parse(in_file) do |row|
-          out_file << CSV::Row.new(column_keys, row)
-        end
+      # parser takes a fileIO object and will read the file
+      # lines until EOF. As the reading cursor advances for
+      # each complete record it finds it will yield an array
+      # representing the row object.
+      parser.parse(file_enum) do |row|
+        out_file << CSV::Row.new(column_keys, row)
       end
     end
 
@@ -65,7 +64,7 @@ In order to properly parse an 834 file we have a simple definition object.
 Abstracting the structure of the 834 file in this way makes it easy to change
 it also makes the library code easy to test (see spec files for examples).
 
-For context a dummy 834 record looks like this:
+For context an example 834 record looks like this:
 
     INS*Y*18*030*AB*A***FT**N*******0
     REF*0F*00000000
@@ -83,6 +82,13 @@ For context a dummy 834 record looks like this:
     DTP*348*D8*20160101
     AMT*D2*6000
     REF*1L*WY 00222D 0001419020 2100572 N65533    WMO
+
+Note: This gem was updated to only support '~' based line separators in files (i.e no newlines in the file, only tildes). The file faker and all the specs have been updated to reflect this change. If you want to use the library for a file that does not have ~ based line endings you can pass this in to the `lazy_file_stream` class method. 
+
+For example:
+
+    file_enum = Grnds::Ediot::Parser.lazy_file_stream(INPUT_FILE_PATH, "\n")
+
 
 
 The based on this example record the out-of-the-box definition is:

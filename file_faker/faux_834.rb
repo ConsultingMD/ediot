@@ -42,10 +42,16 @@ module FileFaker
 
     def render(io_stream)
       generate_data
-      io_stream << render_header
+      io_stream << newline_to_tilde(render_header)
       @data.each do |p|
-        io_stream << render_person(p)
+        io_stream << newline_to_tilde(render_person(p))
       end
+    end
+
+    # Easier to just gsub the newlines than deal
+    # with a erb template that is all on one line
+    def newline_to_tilde(str)
+      str.gsub(/\r|\n/, '~')
     end
 
     def randomize_dependency(sponsor)
