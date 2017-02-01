@@ -9,7 +9,7 @@ module Grnds
       DEFINITION = {
         INS: {size: 17},
         REF: {occurs: 5, size: 2},
-        DTP: {occurs: 3, size: 3},
+        DTP: {occurs: 10, size: 3},
         NM1: {occurs: 2, size: 9},
         PER: {size: 8},
         N3: {size: 2},
