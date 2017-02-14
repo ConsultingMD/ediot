@@ -33,18 +33,33 @@ namespace :demo do
   INPUT_FILE_PATH = 'tmp/834_fake_file.txt'
   OUTPUT_FILE_PATH = 'tmp/834_fake_file.csv'
 
+  DEFINITION = {
+    INS: {size: 17},
+    REF: {occurs: 5, size: 2},
+    DTP: {occurs: 10, size: 3},
+    NM1: {occurs: 2, size: 9},
+    PER: {size: 8},
+    N3: {size: 2},
+    N4: {size: 3},
+    DMG: {size: 3},
+    HLH: {size: 3},
+    HD: {size: 5},
+    AMT: {size: 2},
+  }.freeze
+
   desc 'Parse sample 834 file to a csv'
   task :parse_to_csv do |t|
 
     start_time = Time.now
     row_count = 0
 
+    puts "Reading '#{INPUT_FILE_PATH}'"
     print_file_stats(INPUT_FILE_PATH)
 
     file_enum = Grnds::Ediot::Parser.lazy_file_stream(INPUT_FILE_PATH)
     File.open(OUTPUT_FILE_PATH, 'w') do |out_file|
 
-      parser = Grnds::Ediot::Parser.new
+      parser = Grnds::Ediot::Parser.new(DEFINITION)
       column_headers = parser.row_keys
       out_file << CSV::Row.new(column_headers,column_headers, true).to_s
 
@@ -56,6 +71,7 @@ namespace :demo do
 
     end
     print_run_stats(row_count, start_time)
+    puts "Wrote to '#{OUTPUT_FILE_PATH}'"
   end
 
   def print_file_stats(input_file_path)
