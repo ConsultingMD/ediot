@@ -5,6 +5,7 @@ require 'csv'
 require 'grnds/ediot'
 require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
+require_relative 'file_faker/walmart_multipart_filename'
 require_relative 'file_faker/faux_834'
 
 RSpec::Core::RakeTask.new(:spec)
@@ -25,6 +26,21 @@ namespace :sample_data do
       puts faker.render_meta
     end
     puts "Wrote '#{path}'"
+  end
+
+  desc 'Generates a Walmart multipart file'
+  task :generate_all do |t|
+    dirname = 'tmp'
+    FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
+    FileFaker::WalmartMultipartFilename.new.each do |filename|
+      path = File.join(dirname, filename)
+      File.open(path,'w') do |file|
+        faker = FileFaker::Faux834.new(employee_count: 1000)
+        faker.render(file)
+        puts faker.render_meta
+        puts "Wrote '#{path}'"
+      end
+    end
   end
 end
 
