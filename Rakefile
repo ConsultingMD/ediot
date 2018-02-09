@@ -5,6 +5,7 @@ require 'csv'
 require 'grnds/ediot'
 require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
+require_relative 'file_faker/walmart_multipart_filename'
 require_relative 'file_faker/faux_834'
 
 RSpec::Core::RakeTask.new(:spec)
@@ -13,18 +14,34 @@ task :default => :spec
 
 namespace :sample_data do
 
-  desc 'Makes a sample data file for 834 testing'
+  desc 'Makes a single sample data file for 834 testing'
   task :generate do |t|
     dirname = 'tmp'
-    filename = "834_fake_file_#{Time.now.to_i}.txt"
     FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
-    path = File.join(dirname, filename)
-    File.open(path,'w') do |file|
-      faker = FileFaker::Faux834.new(employee_count: 1000)
-      faker.render(file)
-      puts faker.render_meta
+    FileFaker::Filename.new.each do |filename|
+      path = File.join(dirname, filename)
+      File.open(path,'w') do |file|
+        faker = FileFaker::Faux834.new(employee_count: 1000)
+        faker.render(file)
+        puts faker.render_meta
+        puts "Wrote '#{path}'"
+      end
     end
-    puts "Wrote '#{path}'"
+  end
+
+  desc 'Makes a sample Walmart multipart data file for 834 testing'
+  task :generate_all do |t|
+    dirname = 'tmp'
+    FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
+    FileFaker::WalmartMultipartFilename.new.each do |filename|
+      path = File.join(dirname, filename)
+      File.open(path,'w') do |file|
+        faker = FileFaker::Faux834.new(employee_count: 1000)
+        faker.render(file)
+        puts faker.render_meta
+        puts "Wrote '#{path}'"
+      end
+    end
   end
 end
 
