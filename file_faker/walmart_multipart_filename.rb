@@ -3,7 +3,7 @@ require_relative 'filename'
 module FileFaker
   # Generates a filename sequence for a Walmart multipart eligibility file. The filenames are as follows:
   #
-  #    X12~005010X220A1~834~OUT-C.N.N.YYYY-MM-DD_HH-MM-SS.txt
+  #    X12~005010X220A1~834~OUT-C.N.N.YYYY-MM-DD_HH-MM-SS
   #
   # where:
   #
@@ -21,8 +21,6 @@ module FileFaker
   #
   #    HH-MM-SS                        Time stamp of file part.
   #
-  #    .txt                            Fixed suffix, indicating a plain text file.
-  #
   # Currently, the Walmart eligibility files comes in 4 parts.
   class WalmartMultipartFilename < Filename
     PREFIX = 'X12~005010X220A1~834~OUT-'.freeze
@@ -39,7 +37,7 @@ module FileFaker
 
     # Generates the current filename based on the current state.
     def current_file
-      @base + @now.strftime('%F_%H-%M-%S') + SUFFIX
+      @base + @now.strftime('%F_%H-%M-%S')
     end
   end
 end
