@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "EDI Online Transformer"
   spec.description   = "Don't be an EDIot. This gem contains libraries to transform an EDI X12 834 formated file (row based) to flattened CSV format (column based)"
   spec.homepage      = "https://github.com/ConsultingMD/ediot"
-  spec.license       = "Copyright (c) 2016 Grand Rounds Inc, all rights reserved"
+  spec.license       = "Copyright (c) 2020 Grand Rounds Inc, all rights reserved"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.

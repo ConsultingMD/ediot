@@ -44,7 +44,7 @@ module Grnds
       end
 
 
-      # Ensures consistent orderding of the elements in the record
+      # Ensures consistent ordering of the elements in the record
       #
       # @param raw_rows [Array]
       # @param row_key [Symbol]
