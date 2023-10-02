@@ -48,7 +48,7 @@ module Grnds
         end
       end
 
-      # Initialize with the definition of the 384 eligibility file
+      # Initialize with the definition of the 834 eligibility file
       #
       # @param definition [Hash{Symbol => Hash{Symbol => Number}}]
       def initialize(definition=DEFINITION)
