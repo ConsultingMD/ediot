@@ -45,6 +45,7 @@ module Grnds
         @base + @now.strftime('%F_%H-%M-%S')
       end
 
+      #noinspection RubyUnusedLocalVariable
       def next_file
         return super unless @cross_midnight
 

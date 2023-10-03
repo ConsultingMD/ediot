@@ -4,8 +4,7 @@ require 'csv'
 RSpec.describe Grnds::Ediot::Record do
 
   let(:raw_record) {
-    ['INS*Y*0',
-    'REF*0F*487261279']
+    %w[INS*Y*0 REF*0F*487261279]
   }
 
   let(:definition) {{
@@ -21,7 +20,7 @@ RSpec.describe Grnds::Ediot::Record do
     end
 
     it 'has defined row keys' do
-      expect(record.row_keys).to eq ['ins_1', 'ins_2', 'ref_1', 'ref_2']
+      expect(record.row_keys).to eq %w[ins_1 ins_2 ref_1 ref_2]
     end
 
     it 'has no row values to start' do
@@ -30,11 +29,11 @@ RSpec.describe Grnds::Ediot::Record do
   end
 
   describe 'generating keys' do
-    context 'for segments occuring once' do
+    context 'for segments occurring once' do
       let(:definition) { {ins: {size: 2}} }
 
       it 'creates keys to one level deep' do
-        expect(record.row_keys).to eq ['ins_1', 'ins_2']
+        expect(record.row_keys).to eq %w[ins_1 ins_2]
       end
     end
 
@@ -42,7 +41,7 @@ RSpec.describe Grnds::Ediot::Record do
       let(:definition) {{ ins: { size: 2, occurs: 2 } }}
 
       it 'creates nested keys' do
-        expect(record.row_keys).to eq ['ins_1_1', 'ins_1_2', 'ins_2_1', 'ins_2_2']
+        expect(record.row_keys).to eq %w[ins_1_1 ins_1_2 ins_2_1 ins_2_2]
       end
     end
   end
@@ -64,7 +63,7 @@ RSpec.describe Grnds::Ediot::Record do
         end
 
         it 'contains all the segment data' do
-          vals = ['Y','0','0F','487261279']
+          vals = %w[Y 0 0F 487261279]
           record.row_values.each_with_index do |val, idx|
             expect(val).to eq(vals[idx])
           end
@@ -94,8 +93,8 @@ RSpec.describe Grnds::Ediot::Record do
 
         let(:processed) {
           [
-            ['Y','0'],
-            ['0F','487261279'],
+            %w[Y 0],
+            %w[0F 487261279],
             ['23','BOB SMITH'] # note the order change
           ].flatten
         }
@@ -136,7 +135,7 @@ RSpec.describe Grnds::Ediot::Record do
 
         let(:processed) {
           [
-            ['Y','0'],
+            %w[Y 0],
             ['23','BOB SMITH'],
             ['','']
           ].flatten

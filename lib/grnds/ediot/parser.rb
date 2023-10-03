@@ -3,7 +3,7 @@ module Grnds
     class Parser
       include SegmentParser
 
-      # Can only be one a one character segment separator
+      # Can only be one character segment separator
       SEGMENT_SEP = '~'
 
       DEFINITION = {
@@ -30,7 +30,7 @@ module Grnds
       end
 
       # String based stream filter to split strings into enumerated lines based
-      # on the desginated segment separator
+      # on the designated segment separator
       #
       # @param enum_of_strings [Enumerator] An enum of string objects
       # @param sep [String] the line separator

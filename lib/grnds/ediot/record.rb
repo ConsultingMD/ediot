@@ -44,7 +44,7 @@ module Grnds
       end
 
 
-      # Ensures consistent orderding of the elements in the record
+      # Ensures consistent ordering of the elements in the record
       #
       # @param raw_rows [Array]
       # @param row_key [Symbol]
@@ -59,13 +59,13 @@ module Grnds
       # @param row_key [Symbol]
       # @param occurs [Number]
       # @param rows_matched [Number]
-      # @raise [Error::RecordParsingError] if the occurance does not match the record
+      # @raise [Error::RecordParsingError] if the occurrence does not match the record
       private def raise_record_error(row_key, occurs, rows_matched)
         msg = "Error parsing record! Expected #{occurs} of #{row_key} segments. Got #{rows_matched}."
         raise Error::RecordParsingError.new(msg)
       end
 
-      # Iterates over the definiton of the 834 file and generates the array of
+      # Iterates over the definition of the 834 file and generates the array of
       # column headers for each segment size and type. Expects definition is an 
       # ordered Hash.
       #
@@ -75,12 +75,12 @@ module Grnds
       end
 
       # Creates the header row column names that based on the 834 definition.
-      # It take their segment size and occurence count to generate the
+      # It take their segment size and occurrence count to generate the
       # columns names.
       #
       # @param key [Symbol]
       # @param options [Hash]
-      # @return [Array<Strting>]
+      # @return [Array<String>]
       private def definition_to_keys(key, options)
         row_keys = []
         size = options[:size] || 2

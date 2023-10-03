@@ -7,7 +7,7 @@ module Grnds
   module FileFaker
     class Faux834
 
-      # POPULATION is randomly sampled to seed varables for
+      # POPULATION is randomly sampled to seed variables for
       # the sponsors set of dependents. Each entry in the array
       # has the format [<spouse/partner count>,<child count>].
       # E.g. array [1,2] for a sponsor will generate one spouse/partner
@@ -78,25 +78,25 @@ module Grnds
         {
           primary: 'Y',
           ft_status: 'FT',
-          subscriber_number: Faker::Number.number(9),
-          benefit_number: Faker::Number.number(8),
+          subscriber_number: Faker::Number.number(digits: 9),
+          benefit_number: Faker::Number.number(digits: 8),
           relationship_code: '18',
           first_name: Faker::Name.first_name,
           last_name: Faker::Name.last_name,
           middle_i: [*?A..?Z].sample,
-          ssn: Faker::Number.number(9),
+          ssn: Faker::Number.number(digits: 9),
           email: Faker::Internet.email,
-          home_phone: Faker::Number.number(10),
-          cell_phone: Faker::Number.number(10),
+          home_phone: Faker::Number.number(digits: 10),
+          cell_phone: Faker::Number.number(digits: 10),
           street_address: Faker::Address.street_address,
           apt_number: [Faker::Address.secondary_address, '', ''].sample,
           city: Faker::Address.city,
           state: Faker::Address.state_abbr,
           zipcode: Faker::Address.zip,
-          gender: ['M','F'].sample,
-          birthdate: Faker::Date.between(Date.today - 25000, Date.today - 7000).strftime('%Y%m%d'),
-          plan_number: [ '00000', '02700', '03100', '02200', '04000', '04004' ].sample,
-          coverage_type: ['ECH','FAM'].sample,
+          gender: %w[M F].sample,
+          birthdate: Faker::Date.between(from: Date.today - 25000, to: Date.today - 7000).strftime('%Y%m%d'),
+          plan_number: %w[00000 02700 03100 02200 04000 04004].sample,
+          coverage_type: %w[ECH FAM].sample,
         }.reduce({}) { |h, (k, v)| h[k] = v.upcase; h }
       end
 
@@ -105,7 +105,7 @@ module Grnds
         dependent.merge(
           primary: 'N',
           ft_status: '',
-          relationship_code: ['01','53'].sample,
+          relationship_code: %w[01 53].sample,
           subscriber_number: sponsor[:subscriber_number],
           plan_number: sponsor[:plan_number],
           street_address: sponsor[:street_address],
@@ -120,7 +120,7 @@ module Grnds
       def as_a_child(dependent)
         dependent.merge(
           relationship_code: '19',
-          birthdate: Faker::Date.between(Date.today - 7000, Date.today - 30).strftime('%Y%m%d'),
+          birthdate: Faker::Date.between(from: Date.today - 7000, to: Date.today - 30).strftime('%Y%m%d'),
         )
       end
 

@@ -87,7 +87,7 @@ RSpec.describe Grnds::Ediot::Parser do
     let(:raw_records) { File.foreach('spec/support/simple_sample.txt') }
     let(:expected_results) { CSV.read('spec/support/processed_simple_sample.csv', headers: true) }
 
-    it 'proceses the records correctly' do
+    it 'processes the records correctly' do
       processed_rows = parser.parse_to_hashes(raw_records)
       expected_results.each_with_index do |expected_row, idx|
         processed_rows[idx].each do |row_key, row_val|

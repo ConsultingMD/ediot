@@ -4,7 +4,7 @@ module Grnds
 
       SEGMENT_MATCHER = /\*/
 
-      # Splits a raw row string into the segment parts. It padds out elements with empty strings.
+      # Splits a raw row string into the segment parts. It pads out elements with empty strings.
       # Returns an array of size `size` padded with empty string array values if needed.
       #
       # @param raw_row [String]

@@ -21,7 +21,7 @@ module Grnds
 
       DEF_PREFIX = '834_fake_file_'.freeze
       SUFFIX = '.txt'.freeze
-      MAXTIMEDIFF = 10
+       MAX_TIME_DIFF = 10
 
       # Creates a new filename generator for the specified number of files (parts). Each filename will have the specified
       # prefix and the first filename will be based on the specified time.
@@ -47,7 +47,7 @@ module Grnds
         name = nil
         if @next <= @nfiles
           name = current_file
-          @now += (rand(MAXTIMEDIFF - 1) + 1)
+          @now += (rand(MAX_TIME_DIFF - 1) + 1)
           @next += 1
         end
         name

@@ -14,7 +14,8 @@ task :default => :spec
 namespace :sample_data do
 
   desc 'Makes a single sample data file for 834 testing'
-  task :generate do |t|
+
+  task :generate do |_|
     dirname = 'tmp'
     FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
     Grnds::FileFaker::Filename.new.each do |filename|
@@ -29,7 +30,7 @@ namespace :sample_data do
   end
 
   desc 'Makes a sample Walmart multipart data file for 834 testing'
-  task :generate_all do |t|
+  task :generate_all do |_|
     dirname = 'tmp'
     FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
     Grnds::FileFaker::WalmartMultipartFilename.new.each do |filename|
@@ -64,7 +65,7 @@ namespace :demo do
   }.freeze
 
   desc 'Parse sample 834 file to a csv'
-  task :parse_to_csv do |t|
+  task :parse_to_csv do |_|
 
     start_time = Time.now
     row_count = 0
